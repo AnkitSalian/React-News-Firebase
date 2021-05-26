@@ -14,16 +14,22 @@ function Login(props) {
   const { handleBlur, handleChange, handleSubmit, values, errors, submitting } = useFormValidation(INITIAL_STATE, validateLogin, authenticateUser);
 
   const [login, setLogin] = useState(true);
+  const [firebaseError, setFirebaseError] = useState(null);
 
   async function authenticateUser() {
-    const {name, email, password} = values;
-    
-    const response = login ?
-    await firebase.login(email, password)
-    :
-    await firebase.register(name, email, password);
+    const { name, email, password } = values;
 
-    console.log({response});
+    try {
+      login ?
+        await firebase.login(email, password)
+        :
+        await firebase.register(name, email, password);
+    } catch (err) {
+      console.error('Authenticate user', err);
+      setFirebaseError(err.message);
+    }
+
+
   }
 
   return <div>
@@ -58,9 +64,10 @@ function Login(props) {
         placeholder="Password"
       />
       {errors.password && <p className="error-text">{errors.password}</p>}
+      {firebaseError && <p className="error-text">{firebaseError}</p>}
       <div className="flex mt3">
         <button type="submit" className="button pointer mr2" disabled={submitting}
-        style={{background: submitting ? 'grey' : 'orange'}}>
+          style={{ background: submitting ? 'grey' : 'orange' }}>
           Submit
         </button>
         <button type="button" className="pointer button"
