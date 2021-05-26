@@ -2,6 +2,7 @@ import app from 'firebase/app';
 import 'firebase/auth';
 
 import firebaseConfig from './config';
+import FirebaseContext from './context';
 
 class Firebase {
     constructor() {
@@ -25,4 +26,5 @@ class Firebase {
 
 const firebase = new Firebase();
 
+export {FirebaseContext};
 export default firebase;
