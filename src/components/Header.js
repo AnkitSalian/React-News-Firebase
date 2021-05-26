@@ -22,17 +22,23 @@ function Header() {
         <NavLink to="/search" className="header-link" >
           search
         </NavLink>
-        <div className="divider">|</div>
-        <NavLink to="/create" className="header-link" >
-          submit
-        </NavLink>
+        {user && (
+          <>
+            <div className="divider">|</div>
+            <NavLink to="/create" className="header-link" >
+              submit
+            </NavLink>
+          </>
+        )}
       </div>
       <div className="flex">
         {user ?
           <>
             <div className="header-name">{user.displayName}</div>
             <div className="divider">|</div>
-            <div className="header-button">Logout</div>
+            <div className="header-button"
+              onClick={() => firebase.logout()}
+            >Logout</div>
           </>
           :
           <NavLink to="/login" className="header-link" >
