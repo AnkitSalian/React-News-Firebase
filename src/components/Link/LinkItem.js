@@ -1,14 +1,41 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import distanceInWordsNow from 'date-fns/distance_in_words_to_now'
 import { getDomain } from "../../utils";
+import { FirebaseContext } from "../../firebase";
 
-function LinkItem({ link, index, showCount }) {
+function LinkItem({ link, index, showCount, history }) {
+
+  const { firebase, user } = React.useContext(FirebaseContext);
+
+  function handleVote() {
+    if (!user) {
+      history.push('/login');
+    } else {
+      const voteRef = firebase.db.collection('Links').doc(link.id);
+      voteRef.get().then(doc => {
+        if (doc.exists) {
+          const previousVotes = doc.data().votes;
+          const vote = {
+            votedBy: {
+              id: user.uid,
+              name: user.displayName
+            }
+          };
+          if (!previousVotes.some(v => v.votedBy.id === vote.votedBy.id)) {
+            const updatedVotes = [...previousVotes, vote];
+            voteRef.update({ votes: updatedVotes });
+          }
+
+        }
+      })
+    }
+  }
   return (
     <div className="flex items-start mt2">
       <div className="flex item-center">
         {showCount && <span className="gray">{index}.</span>}
-        <div className="vote-button">▲</div>
+        <div className="vote-button" onClick={handleVote} style={{ cursor: "pointer" }}>▲</div>
       </div>
       <div className="ml1">
         <div>
@@ -31,4 +58,4 @@ function LinkItem({ link, index, showCount }) {
   );
 }
 
-export default LinkItem;
+export default withRouter(LinkItem);
