@@ -24,7 +24,8 @@ function LinkItem({ link, index, showCount, history }) {
           };
           if (!previousVotes.some(v => v.votedBy.id === vote.votedBy.id)) {
             const updatedVotes = [...previousVotes, vote];
-            voteRef.update({ votes: updatedVotes });
+            const voteCount = updatedVotes.length;
+            voteRef.update({ votes: updatedVotes, voteCount });
           }
 
         }
@@ -54,7 +55,7 @@ function LinkItem({ link, index, showCount, history }) {
           <a href={link.url} className="black no-underline" >{link.description}</a> <span className="link">({getDomain(link.url)})</span>
         </div>
         <div className="f6 lh-copy gray">
-          {link.votes.length} votes by {link.postedBy.name} {distanceInWordsNow(link.created)}
+          {link.voteCount} votes by {link.postedBy.name} {distanceInWordsNow(link.created)}
           {" | "}
           <Link to={`/link/${link.id}`}>
             {link.comments.length > 0
